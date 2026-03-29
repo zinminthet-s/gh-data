@@ -7,7 +7,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    test:
+    steps:
       - name: GET CODE
         uses: actions/checkout@v6
       - name: INSTALL DEPENDENCIES
