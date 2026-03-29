@@ -34,12 +34,14 @@ jobs:
             dist
             package.json
   deploy:
-    runs-on: ubuntu-latest
     needs: [test, build]
+    runs-on: ubuntu-latest
     steps:
-      - name: GET CODE
-        uses: actions/checkout@v6
-      - name: INSTALL DEPENDENCIES
-        run: npm ci
+      - name: GET BUILD ARTIFACT
+        uses: actions/download-artifact@v3
+        with:
+          name: dist-files
+      - name: OUTPUT CONTENTS
+        run: ls
       - name: Deploy Website
         run: echo "Deploying ...."
