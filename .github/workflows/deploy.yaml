@@ -56,6 +56,6 @@ jobs:
       - name: Output Filename
         run: echo "${{ needs.build.outputs.script-file }}"
       - name: Output css file name
-        run: echo "${needs.build.outputs.css-file}"
+        run: echo "${{needs.build.outputs.css-file}}"
       - name: Deploy Website
         run: echo "Deploying ...."
