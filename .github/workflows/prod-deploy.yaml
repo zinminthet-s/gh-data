@@ -1,0 +1,83 @@
+# Tasks
+
+# Test
+# Build
+# Deploy
+
+name: Production Deployment
+on:
+  push:
+    branches:
+      - "main"
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - "main"
+    types:
+      - opened
+      - closed
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: gh-data
+    steps:
+      - name: GET CODE
+        uses: actions/checkout@v6
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: depe-node-module-${{ hashFiles("**/package-lock.json") }}
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run Lint
+        run: npm run lint
+      - name: Run Test
+        run: npm run test
+  Build:
+    runs-on: ubuntu-latest
+    needs: [Test]
+    outputs:
+      js-file: ${{ steps.js-file-name.outputs.script-file-name }}
+      css-file: ${{ steps.css-file-name.outputs.stylesheet-file-name }}
+    steps:
+      - name: GET CODE
+        uses: actions/checkout@v6
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: depe-node-module-${{ hashFiles("**/package-lock.json") }}
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build Website
+        run: npm run build
+      - name: Publish js files
+        id: js-file-name
+        run: find dist/assets/*.js -execdir echo "script-file-name={}" >> $GITHUB_OUTPUT ';'
+      - name: Publish css files
+        id: css-file-name
+        run: find dist/assets/*.css -execdir echo "stylesheet-file-name={}" >> $GITHUB_OUTPUT ';'
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-with-json
+          path: |
+            dist
+            package.json
+      - name: Output Content
+        run: echo "DONE OUTPUTTING"
+  Deploy:
+    needs: [Test, Build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-with-json
+      - name: Access published outputs
+        run: echo "${{ needs.Build.outputs.js-file-name }} ${{ needs.Build.outputs.css-file-name}}"
+      - name: Deploy Website
+        run: echo "Deploying......"
