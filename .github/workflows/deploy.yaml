@@ -61,6 +61,7 @@ jobs:
       - name: Build Website
         run: npm run build
   report:
+    if: ${{failure()}}
     needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
