@@ -2,7 +2,6 @@ name: Matrix Demo
 on: push
 jobs:
   build:
-    continue-on-error: true
     strategy:
       matrix:
         node-version: [12, 14, 16]
