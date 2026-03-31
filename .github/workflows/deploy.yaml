@@ -49,7 +49,7 @@ jobs:
           path: |
             test.json
       - name: Publish Report File Name
-        if: ${{steps.upload-test-report.outcome != 'failure'}}
+        if: ${{!failure() && steps.upload-test-report.outcome != 'failure'}}
         id: test-file-name
         run: |
           find ./*.json -type f -execdir echo "report-file-name={}" >> $GITHUB_OUTPUT ';'
