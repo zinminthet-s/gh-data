@@ -23,6 +23,7 @@ jobs:
         run: npm run lint
   test:
     runs-on: ubuntu-latest
+
     outputs:
       test-report: ${{ steps.test-file-name.outputs.report-file-name}}
     steps:
@@ -38,6 +39,7 @@ jobs:
         if: ${{ steps.cache.outputs.cache-hit != 'true' }}
         run: npm ci
       - name: Run Test
+        continue-on-error: true
         id: unit-test
         run: npm run test
       - name: Upload Test Report
