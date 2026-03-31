@@ -62,7 +62,7 @@ jobs:
         run: npm run build
   report:
     if: ${{failure()}}
-    needs: [lint, test]
+    needs: [lint, test, deploy]
     runs-on: ubuntu-latest
     steps:
       - name: Output Report
