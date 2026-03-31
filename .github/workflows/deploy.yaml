@@ -49,9 +49,11 @@ jobs:
           path: |
             test.json
       - name: Publish Report File Name
-        if: ${{ steps.upload-test-report.outputs.artifact-id !='' }}
+        if: ${{steps.upload-test-report.outputs.artifact-id != ''}}
         id: test-file-name
-        run: find ./*.json -type f -execdir echo "report-file-name={}" >> $GITHUB_OUTPUT ';'
+        run: |
+          find ./*.json -type f -execdir echo "report-file-name={}" >> $GITHUB_OUTPUT ';'
+          echo "${{steps.upload-test-report.outputs.artifact-id}}"
   build:
     needs: [test]
     runs-on: ubuntu-latest
