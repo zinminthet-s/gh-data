@@ -23,6 +23,8 @@ jobs:
         run: npm run lint
   test:
     runs-on: ubuntu-latest
+    outputs:
+      test-report: ${{ steps.test-file-name.outputs.report-file-name}}
     steps:
       - name: Get Code
         uses: actions/checkout@v6
@@ -38,12 +40,17 @@ jobs:
         id: unit-test
         run: npm run test
       - name: Upload Test Report
-        if: ${{ failure() && steps.unit-test.conclusion == 'failure' }}
+        id: upload-test-report
+        if: ${{ failure() && steps.unit-test.outcome == 'failure' }}
         uses: actions/upload-artifact@v4
         with:
           name: test-report
           path: |
             test.json
+      - name: Publish Report File Name
+        if: ${{ steps.upload-test-report.outcome == 'success' }}
+        id: test-file-name
+        run: find ./*.json -type f -execdir echo "report-file-name={}" >> $GITHUB_OUTPUT ';'
   build:
     needs: [test]
     runs-on: ubuntu-latest
@@ -65,8 +72,12 @@ jobs:
     needs: [lint, test, deploy]
     runs-on: ubuntu-latest
     steps:
+      - name: Download Test Report
+        uses: actions/download-artifact@v4
+        with:
+          name: test-report
       - name: Output Report
-        run: echo "Output Report"
+        run: cat ${{ needs.test.outputs.test-report }}
   deploy:
     needs: [build]
     runs-on: ubuntu-latest
