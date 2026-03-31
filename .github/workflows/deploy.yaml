@@ -79,7 +79,7 @@ jobs:
         with:
           name: test-report
       - name: Output Report
-        run: cat test.json
+        run: cat "${{ needs.test.outputs.test-report }}"
   deploy:
     needs: [build]
     runs-on: ubuntu-latest
