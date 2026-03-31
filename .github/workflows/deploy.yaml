@@ -35,6 +35,7 @@ jobs:
           path: node_modules
           key: dep-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install Dependencies
+        if: ${{ steps.cache.outputs.cache-hit == 'true' }}
         run: npm ci
       - name: Run Test
         id: unit-test
@@ -64,6 +65,7 @@ jobs:
           path: node_modules
           key: dep-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install Dependencies
+        if: ${{ steps.cache.outputs.cache-hit == 'true' }}
         run: npm ci
       - name: Build Website
         run: npm run build
